@@ -13,11 +13,11 @@ var getForexRates = (baseCur, toCur, callback) => {
         } else if (response.statusCode === 400) {
             callback('Unable to fetch forex rates.', null);
         } else if (response.statusCode === 200) {
-            console.log('Inside 200 = ' + body);
+            console.log('Inside 200 = ' + JSON.stringify(body));
             callback(undefined, {
                 baseCur: baseCur,
                 toCur: toCur,
-                rates: body.rates.toCur
+                rates: body.rates[toCur]
             });
         }
     });
