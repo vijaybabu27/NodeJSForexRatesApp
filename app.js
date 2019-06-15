@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
   res.render('index.hbs', {
-      pageTitle: 'Home'
+      pageTitle: 'Forex Rates'
   })
 });
 
@@ -42,7 +42,12 @@ app.post('/getForex.html', (req, res) => {
       if (errorMessage) {
           res.render('error.hbs', errorMessage);
       } else {
-        res.render('results.hbs', results);
+        res.render('results.hbs', {
+          pageTitle: 'Forex Rates',
+          baseCur: results.baseCur,
+          rates: results.rates,
+          toCur: results.toCur
+        });
         console.log(`It's currently 1 ${results.baseCur} is equal to ${results.rates} ${results.toCur}`);
       }
     });
