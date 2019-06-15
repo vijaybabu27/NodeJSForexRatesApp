@@ -4,10 +4,9 @@ const hbs = require('hbs');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const forexapi = require('./getForex');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var forexRouter = require('./routes/forex');
 
 var app = express();
 
@@ -22,36 +21,23 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-  res.render('index.hbs', {
-      pageTitle: 'Forex Rates'
-  })
+app.use('/', indexRouter);
+app.use('/getForex.html', forexRouter);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
 });
 
-app.get('/about.html', (req, res) => {
-  res.render('about.hbs', {
-      pageTitle: 'About'
-  })
-});
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-app.post('/getForex.html', (req, res) => {
-  console.log(req.body);
-  var input = req.body;
-  setTimeout(function() {
-    forexapi.getForexRates(input.baseSymbol, input.toSymbol, (errorMessage, results) => {
-      if (errorMessage) {
-          res.render('error.hbs', errorMessage);
-      } else {
-        res.render('results.hbs', {
-          pageTitle: 'Forex Rates',
-          baseCur: results.baseCur,
-          rates: results.rates,
-          toCur: results.toCur
-        });
-        console.log(`It's currently 1 ${results.baseCur} is equal to ${results.rates} ${results.toCur}`);
-      }
-    });
-  }, 1000);
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
 });
 
 app.listen(3000, () => {
